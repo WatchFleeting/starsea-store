@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -257,7 +256,6 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            cursor: pointer;
         }
         
         .app-card:hover {
@@ -625,30 +623,30 @@
             <div class="filter-group">
                 <h3 class="filter-title"><i class="fas fa-layer-group"></i> 应用分类</h3>
                 <div class="filter-tags">
-                    <button class="filter-tag active" data-category="all">全部应用</button>
-                    <button class="filter-tag" data-category="game"><i class="fas fa-gamepad"></i> 游戏</button>
-                    <button class="filter-tag" data-category="productivity"><i class="fas fa-briefcase"></i> 办公</button>
-                    <button class="filter-tag" data-category="design"><i class="fas fa-paint-brush"></i> 设计</button>
-                    <button class="filter-tag" data-category="education"><i class="fas fa-graduation-cap"></i> 教育</button>
+                    <button class="filter-tag active" data-filter="category" data-value="all">全部应用</button>
+                    <button class="filter-tag" data-filter="category" data-value="game"><i class="fas fa-gamepad"></i> 游戏</button>
+                    <button class="filter-tag" data-filter="category" data-value="productivity"><i class="fas fa-briefcase"></i> 办公</button>
+                    <button class="filter-tag" data-filter="category" data-value="design"><i class="fas fa-paint-brush"></i> 设计</button>
+                    <button class="filter-tag" data-filter="category" data-value="education"><i class="fas fa-graduation-cap"></i> 教育</button>
                 </div>
             </div>
             
             <div class="filter-group">
                 <h3 class="filter-title"><i class="fas fa-tags"></i> 应用标签</h3>
                 <div class="filter-tags">
-                    <button class="filter-tag" data-tag="free"><i class="fas fa-tag"></i> 免费</button>
-                    <button class="filter-tag" data-tag="premium"><i class="fas fa-crown"></i> 高级版</button>
-                    <button class="filter-tag" data-tag="new"><i class="fas fa-star"></i> 新应用</button>
-                    <button class="filter-tag" data-tag="editor"><i class="fas fa-award"></i> 编辑推荐</button>
+                    <button class="filter-tag" data-filter="tag" data-value="free"><i class="fas fa-tag"></i> 免费</button>
+                    <button class="filter-tag" data-filter="tag" data-value="premium"><i class="fas fa-crown"></i> 高级版</button>
+                    <button class="filter-tag" data-filter="tag" data-value="new"><i class="fas fa-star"></i> 新应用</button>
+                    <button class="filter-tag" data-filter="tag" data-value="editor"><i class="fas fa-award"></i> 编辑推荐</button>
                 </div>
             </div>
             
             <div class="filter-group">
                 <h3 class="filter-title"><i class="fas fa-sort"></i> 排序方式</h3>
                 <div class="filter-tags">
-                    <button class="filter-tag active" data-sort="popular"><i class="fas fa-fire"></i> 热门</button>
-                    <button class="filter-tag" data-sort="newest"><i class="fas fa-clock"></i> 最新</button>
-                    <button class="filter-tag" data-sort="rating"><i class="fas fa-star"></i> 评分</button>
+                    <button class="filter-tag active" data-filter="sort" data-value="popular"><i class="fas fa-fire"></i> 热门</button>
+                    <button class="filter-tag" data-filter="sort" data-value="newest"><i class="fas fa-clock"></i> 最新</button>
+                    <button class="filter-tag" data-filter="sort" data-value="rating"><i class="fas fa-star"></i> 评分</button>
                 </div>
             </div>
         </div>
@@ -671,42 +669,7 @@
             </div>
             
             <div class="download-list" id="downloadList">
-                <div class="download-item">
-                    <div class="download-icon" style="background: linear-gradient(135deg, #4361ee, #4895ef);">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <div class="download-info">
-                        <div class="download-name">PhotoMaster Pro</div>
-                        <div class="download-status">
-                            <i class="fas fa-check-circle"></i>
-                            <span>已完成</span>
-                        </div>
-                    </div>
-                    <div class="download-actions">
-                        <button><i class="fas fa-play-circle"></i></button>
-                        <button><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-                
-                <div class="download-item">
-                    <div class="download-icon" style="background: linear-gradient(135deg, #f8961e, #f3722c);">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div class="download-info">
-                        <div class="download-name">DocuSync</div>
-                        <div class="download-status">
-                            <i class="fas fa-cloud-download-alt"></i>
-                            <span>下载中 - 45%</span>
-                        </div>
-                        <div class="download-progress">
-                            <div class="progress-bar" style="width: 45%"></div>
-                        </div>
-                    </div>
-                    <div class="download-actions">
-                        <button><i class="fas fa-pause"></i></button>
-                        <button><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
+                <!-- 下载项将在这里动态生成 -->
             </div>
         </div>
     </div>
@@ -821,10 +784,14 @@
         const clearDownloadsBtn = document.getElementById('clearDownloads');
         
         // 当前筛选状态
-        let currentCategory = 'all';
-        let currentTag = '';
-        let currentSort = 'popular';
-        let searchTerm = '';
+        const filters = {
+            category: 'all',
+            tag: '',
+            sort: 'popular'
+        };
+        
+        // 下载队列
+        let downloads = [];
         
         // 初始化应用列表
         function renderApps() {
@@ -833,23 +800,23 @@
             // 过滤应用
             let filteredApps = apps.filter(app => {
                 // 分类筛选
-                const categoryMatch = currentCategory === 'all' || 
-                                    app.category.toLowerCase().includes(currentCategory);
+                const categoryMatch = filters.category === 'all' || 
+                                    app.category.toLowerCase().includes(filters.category);
                 
                 // 标签筛选
-                const tagMatch = currentTag === '' || app.tags.includes(currentTag);
+                const tagMatch = filters.tag === '' || app.tags.includes(filters.tag);
                 
                 // 搜索筛选
-                const searchMatch = searchTerm === '' || 
-                                   app.name.toLowerCase().includes(searchTerm) || 
-                                   app.description.toLowerCase().includes(searchTerm) ||
-                                   app.category.toLowerCase().includes(searchTerm);
+                const searchMatch = searchInput.value === '' || 
+                                   app.name.toLowerCase().includes(searchInput.value.toLowerCase()) || 
+                                   app.description.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+                                   app.category.toLowerCase().includes(searchInput.value.toLowerCase());
                 
                 return categoryMatch && tagMatch && searchMatch;
             });
             
             // 排序应用
-            switch(currentSort) {
+            switch(filters.sort) {
                 case 'newest':
                     filteredApps.sort((a, b) => b.id - a.id);
                     break;
@@ -942,6 +909,7 @@
         function addToDownloads(app) {
             const downloadItem = document.createElement('div');
             downloadItem.className = 'download-item';
+            downloadItem.dataset.appId = app.id;
             downloadItem.innerHTML = `
                 <div class="download-icon" style="background: ${app.color}">
                     <i class="${app.icon}"></i>
@@ -963,26 +931,17 @@
             `;
             
             downloadList.appendChild(downloadItem);
-            startDownloadSimulation(downloadItem, app);
             
-            // 添加下载控制事件
-            downloadItem.querySelectorAll('.download-actions button').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const action = this.querySelector('i').className;
-                    
-                    if (action.includes('fa-pause')) {
-                        this.innerHTML = '<i class="fas fa-play"></i>';
-                        showNotification(`已暂停下载: ${app.name}`);
-                    } else if (action.includes('fa-play')) {
-                        this.innerHTML = '<i class="fas fa-pause"></i>';
-                        showNotification(`继续下载: ${app.name}`);
-                    } else if (action.includes('fa-times') || action.includes('fa-trash')) {
-                        downloadItem.remove();
-                        showNotification(`已取消下载: ${app.name}`);
-                    }
-                });
-            });
+            // 添加到下载队列
+            const download = {
+                id: app.id,
+                element: downloadItem,
+                progress: 0,
+                status: 'downloading',
+                intervalId: startDownloadSimulation(downloadItem, app)
+            };
+            
+            downloads.push(download);
         }
         
         // 模拟下载进度
@@ -1001,11 +960,19 @@
                     status.innerHTML = '<i class="fas fa-check-circle"></i> 已完成';
                     downloadItem.querySelector('.download-actions button:first-child').innerHTML = '<i class="fas fa-play-circle"></i>';
                     showNotification(`${app.name} 下载完成`);
+                    
+                    // 更新下载状态
+                    const download = downloads.find(d => d.element === downloadItem);
+                    if (download) {
+                        download.status = 'completed';
+                    }
                 }
                 
                 progressBar.style.width = `${progress}%`;
                 status.textContent = `下载中 - ${Math.round(progress)}%`;
             }, 300);
+            
+            return interval;
         }
         
         // 显示通知
@@ -1024,33 +991,25 @@
         // 筛选标签点击事件
         filterTags.forEach(tag => {
             tag.addEventListener('click', function() {
-                // 移除同类标签的active状态
-                const tagType = this.getAttribute('data-category') ? 'category' : 
-                                this.getAttribute('data-tag') ? 'tag' : 'sort';
-                
-                document.querySelectorAll(`.filter-tag[data-${tagType}]`).forEach(t => {
-                    t.classList.remove('active');
-                });
-                
-                // 设置当前选中状态
-                this.classList.add('active');
+                const filterType = this.getAttribute('data-filter');
+                const filterValue = this.getAttribute('data-value');
                 
                 // 更新筛选状态
-                if (tagType === 'category') {
-                    currentCategory = this.getAttribute('data-category');
-                } else if (tagType === 'tag') {
-                    currentTag = this.getAttribute('data-tag');
-                } else {
-                    currentSort = this.getAttribute('data-sort');
-                }
+                filters[filterType] = filterValue;
                 
+                // 更新UI
+                document.querySelectorAll(`.filter-tag[data-filter="${filterType}"]`).forEach(t => {
+                    t.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 重新渲染应用
                 renderApps();
             });
         });
         
         // 搜索功能
         searchInput.addEventListener('input', function() {
-            searchTerm = this.value.toLowerCase();
             renderApps();
         });
         
@@ -1060,8 +1019,13 @@
             let removedCount = 0;
             
             completedItems.forEach(item => {
-                const statusText = item.querySelector('.download-status span').textContent;
+                const statusText = item.querySelector('.download-status').textContent;
                 if (statusText.includes('已完成')) {
+                    const appId = item.dataset.appId;
+                    
+                    // 从下载队列中移除
+                    downloads = downloads.filter(d => d.id != appId);
+                    
                     item.remove();
                     removedCount++;
                 }
@@ -1076,21 +1040,35 @@
         
         // 下载项操作按钮事件委托
         downloadList.addEventListener('click', function(e) {
-            const button = e.target.closest('.download-actions button');
-            if (!button) return;
+            if (!e.target.closest('.download-actions button')) return;
             
+            const button = e.target.closest('button');
             const downloadItem = button.closest('.download-item');
-            const appName = downloadItem.querySelector('.download-name').textContent;
-            const action = button.querySelector('i').className;
+            const appId = downloadItem.dataset.appId;
+            const download = downloads.find(d => d.id == appId);
             
-            if (action.includes('fa-pause')) {
+            if (!download) return;
+            
+            const appName = downloadItem.querySelector('.download-name').textContent;
+            const actionIcon = button.querySelector('i').className;
+            
+            if (actionIcon.includes('fa-pause')) {
+                // 暂停下载
+                clearInterval(download.intervalId);
                 button.innerHTML = '<i class="fas fa-play"></i>';
+                download.status = 'paused';
                 showNotification(`已暂停下载: ${appName}`);
-            } else if (action.includes('fa-play')) {
+            } else if (actionIcon.includes('fa-play')) {
+                // 继续下载
+                download.intervalId = startDownloadSimulation(downloadItem, apps.find(a => a.id == appId));
+                download.status = 'downloading';
                 button.innerHTML = '<i class="fas fa-pause"></i>';
                 showNotification(`继续下载: ${appName}`);
-            } else if (action.includes('fa-times') || action.includes('fa-trash')) {
+            } else if (actionIcon.includes('fa-times') || actionIcon.includes('fa-trash')) {
+                // 取消下载
+                clearInterval(download.intervalId);
                 downloadItem.remove();
+                downloads = downloads.filter(d => d.id != appId);
                 showNotification(`已取消下载: ${appName}`);
             }
         });

@@ -624,20 +624,20 @@
                 <h3 class="filter-title"><i class="fas fa-layer-group"></i> 应用分类</h3>
                 <div class="filter-tags">
                     <button class="filter-tag active" data-filter="category" data-value="all">全部应用</button>
-                    <button class="filter-tag" data-filter="category" data-value="game"><i class="fas fa-gamepad"></i> 游戏</button>
-                    <button class="filter-tag" data-filter="category" data-value="productivity"><i class="fas fa-briefcase"></i> 办公</button>
-                    <button class="filter-tag" data-filter="category" data-value="design"><i class="fas fa-paint-brush"></i> 设计</button>
-                    <button class="filter-tag" data-filter="category" data-value="education"><i class="fas fa-graduation-cap"></i> 教育</button>
+                    <button class="filter-tag" data-filter="category" data-value="游戏"><i class="fas fa-gamepad"></i> 游戏</button>
+                    <button class="filter-tag" data-filter="category" data-value="办公"><i class="fas fa-briefcase"></i> 办公</button>
+                    <button class="filter-tag" data-filter="category" data-value="设计"><i class="fas fa-paint-brush"></i> 设计</button>
+                    <button class="filter-tag" data-filter="category" data-value="教育"><i class="fas fa-graduation-cap"></i> 教育</button>
                 </div>
             </div>
             
             <div class="filter-group">
                 <h3 class="filter-title"><i class="fas fa-tags"></i> 应用标签</h3>
                 <div class="filter-tags">
-                    <button class="filter-tag" data-filter="tag" data-value="free"><i class="fas fa-tag"></i> 免费</button>
-                    <button class="filter-tag" data-filter="tag" data-value="premium"><i class="fas fa-crown"></i> 高级版</button>
-                    <button class="filter-tag" data-filter="tag" data-value="new"><i class="fas fa-star"></i> 新应用</button>
-                    <button class="filter-tag" data-filter="tag" data-value="editor"><i class="fas fa-award"></i> 编辑推荐</button>
+                    <button class="filter-tag" data-filter="tag" data-value="免费"><i class="fas fa-tag"></i> 免费</button>
+                    <button class="filter-tag" data-filter="tag" data-value="高级版"><i class="fas fa-crown"></i> 高级版</button>
+                    <button class="filter-tag" data-filter="tag" data-value="新应用"><i class="fas fa-star"></i> 新应用</button>
+                    <button class="filter-tag" data-filter="tag" data-value="编辑推荐"><i class="fas fa-award"></i> 编辑推荐</button>
                 </div>
             </div>
             
@@ -801,16 +801,17 @@
             let filteredApps = apps.filter(app => {
                 // 分类筛选
                 const categoryMatch = filters.category === 'all' || 
-                                    app.category.toLowerCase().includes(filters.category);
+                                    app.category === filters.category;
                 
                 // 标签筛选
                 const tagMatch = filters.tag === '' || app.tags.includes(filters.tag);
                 
                 // 搜索筛选
-                const searchMatch = searchInput.value === '' || 
-                                   app.name.toLowerCase().includes(searchInput.value.toLowerCase()) || 
-                                   app.description.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-                                   app.category.toLowerCase().includes(searchInput.value.toLowerCase());
+                const searchTerm = searchInput.value.toLowerCase();
+                const searchMatch = searchTerm === '' || 
+                                   app.name.toLowerCase().includes(searchTerm) || 
+                                   app.description.toLowerCase().includes(searchTerm) ||
+                                   app.category.toLowerCase().includes(searchTerm);
                 
                 return categoryMatch && tagMatch && searchMatch;
             });

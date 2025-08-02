@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppHub - 发现优质应用</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #ff6b6b;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --card-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            --hover-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7ff 0%, #eef2ff 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 2rem;
+        }
+        
+        /* 头部样式 */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 80px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            color: var(--warning);
+            font-size: 2.2rem;
+        }
+        
+        .logo span {
+            background: linear-gradient(to right, #ffffff, #ffd166);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-bar {
+            display: flex;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 50px;
+            padding: 0.5rem 1.25rem;
+            width: 45%;
+            min-width: 350px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+        }
+        
+        .search-bar:focus-within {
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        }
+        
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 0.5rem;
+            outline: none;
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+        
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.75);
+        }
+        
+        .search-bar button {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0 0.5rem;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 1.75rem;
+            align-items: center;
+        }
+        
+        .user-actions a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+        
+        .user-actions a:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .user-actions a i {
+            font-size: 1.3rem;
+        }
+        
+        /* 内容容器 */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        
+        /* 筛选区域 */
+        .filter-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        
+        .filter-tag {
+            background: var(--light);
+            color: var(--gray);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-tag:hover, .filter-tag.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .filter-tag i {
+            font-size: 0.9rem;
+        }
+        
+        /* 应用网格 */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem 0;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            position: relative;
+            padding-left: 1.2rem;
+        }
+        
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 80%;
+            width: 5px;
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        .results-count {
+            font-size: 1rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .app-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .app-image {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .app-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            opacity: 0.9;
+        }
+        
+        .app-image i {
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .app-content {
+            padding: 1.8rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.2rem;
+        }
+        
+        .app-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .app-category {
+            background: var(--light);
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+        }
+        
+        .app-description {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+            flex-grow: 1;
+        }
+        
+        .app-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .app-rating {
+            color: #ffc107;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .app-rating span {
+            color: var(--gray);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+        
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        .download-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .download-btn.downloaded {
+            background: var(--success);
+            box-shadow: 0 4px 10px rgba(6, 214, 160, 0.3);
+        }
+        
+        .download-btn.downloaded:hover {
+            background: #05b388;
+            box-shadow: 0 6px 15px rgba(6, 214, 160, 0.4);
+        }
+        
+        /* 下载管理面板 */
+        .downloads-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 1.8rem;
+            box-shadow: var(--card-shadow);
+            margin-top: 2rem;
+        }
+        
+        .downloads-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-item {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem 0;
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+        
+        .download-item:hover {
+            background: rgba(248, 249, 250, 0.5);
+        }
+        
+        .download-item:last-child {
+            border-bottom: none;
+        }
+        
+        .download-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .download-info {
+            flex: 1;
+        }
+        
+        .download-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-size: 1.1rem;
+        }
+        
+        .download-status {
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        
+        .download-progress {
+            width: 100%;
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.7rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .download-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+        
+        .download-actions button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--light);
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .download-actions button:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        /* 通知 */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.5s, fadeOut 0.5s 2.5s forwards;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        
+        /* 无结果提示 */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 0;
+            color: var(--gray);
+        }
+        
+        .no-results i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--light-gray);
+        }
+        
+        .no-results h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .no-results p {
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                height: auto;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .search-bar {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .user-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .filter-section {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部区域 -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-store"></i>
+            <span>AppHub</span>
+        </div>
+        
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="搜索应用、游戏、工具...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="user-actions">
+            <a href="#downloads-panel"><i class="fas fa-download"></i> 下载管理</a>
+            <a href="#"><i class="fas fa-user"></i> 我的账户</a>
+        </div>
+    </header>
+    
+    <!-- 主要内容区域 -->
+    <div class="container">
+        <!-- 筛选区域 -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <h3 class="filter-title"><i class="fas fa-layer-group"></i> 应用分类</h3>
+                <div class="filter-tags">
+                    <button class="filter-tag active" data-category="all">全部应用</button>
+                    <button class="filter-tag" data-category="game"><i class="fas fa-gamepad"></i> 游戏</button>
+                    <button class="filter-tag" data-category="productivity"><i class="fas fa-briefcase"></i> 办公</button>
+                    <button class="filter-tag" data-category="design"><i class="fas fa-paint-brush"></i> 设计</button>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h3 class="filter-title"><i class="fas fa-tags"></i> 应用标签</h3>
+                <div class="filter-tags">
+                    <button class="filter-tag" data-tag="free"><i class="fas fa-tag"></i> 免费</button>
+                    <button class="filter-tag" data-tag="premium"><i class="fas fa-crown"></i> 高级版</button>
+                    <button class="filter-tag" data-tag="new"><i class="fas fa-star"></i> 新应用</button>
+                    <button class="filter-tag" data-tag="editor"><i class="fas fa-award"></i> 编辑推荐</button>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h3 class="filter-title"><i class="fas fa-sort"></i> 排序方式</h3>
+                <div class="filter-tags">
+                    <button class="filter-tag active" data-sort="popular"><i class="fas fa-fire"></i> 热门</button>
+                    <button class="filter-tag" data-sort="newest"><i class="fas fa-clock"></i> 最新</button>
+                    <button class="filter-tag" data-sort="rating"><i class="fas fa-star"></i> 评分</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 应用网格区域 -->
+        <div class="section-header">
+            <h2 class="section-title">发现应用</h2>
+            <div class="results-count" id="resultsCount">显示 8 个应用</div>
+        </div>
+        
+        <div class="apps-grid" id="appsContainer">
+            <!-- 应用卡片1 -->
+            <div class="app-card" data-categories="photo,editor" data-tags="free,new" data-name="PhotoMaster Pro" data-description="专业的照片编辑工具">
+                <div class="app-image" style="background: linear-gradient(135deg, #4361ee, #4895ef);">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <div class="app-content">
+                    <div class="app-header">
+                        <h3 class="app-title">PhotoMaster Pro</h3>
+                        <div class="app-category">摄影</div>
+                    </div>
+                    <p class="app-description">专业的照片编辑工具，提供强大的滤镜和编辑功能，让您的照片更加出彩。支持RAW格式和批量处理。</p>
+                    <div class="app-footer">
+                        <div class="app-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.7 (4.7K)</span>
+                        </div>
+                        <button class="download-btn"><i class="fas fa-download"></i> 获取</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 应用卡片2 -->
+            <div class="app-card" data-categories="music,editor" data-tags="free" data-name="SoundWave" data-description="高品质音乐播放器">
+                <div class="app-image" style="background: linear-gradient(135deg, #f72585, #b5179e);">
+                    <i class="fas fa-headphones"></i>
+                </div>
+                <div class="app-content">
+                    <div class="app-header">
+                        <h3 class="app-title">SoundWave</h3>
+                        <div class="app-category">音乐</div>
+                    </div>
+                    <p class="app-description">高品质音乐播放器，支持多种格式，提供个性化推荐和在线电台功能。无广告干扰。</p>
+                    <div class="app-footer">
+                        <div class="app-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <span>4.0 (3.2K)</span>
+                        </div>
+                        <button class="download-btn"><i class="fas fa-download"></i> 获取</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 应用卡片3 -->
+            <div class="app-card" data-categories="productivity" data-tags="premium" data-name="DocuSync" data-description="文档协作工具">
+                <div class="app-image" style="background: linear-gradient(135deg, #f8961e, #f3722c);">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="app-content">
+                    <div class="app-header">
+                        <h3 class="app-title">DocuSync</h3>
+                        <div class="app-category">办公</div>
+                    </div>
+                    <p class="app-description">文档协作工具，支持实时编辑、评论和版本控制，提高团队协作效率。与云存储无缝集成。</p>
+                    <div class="app-footer">
+                        <div class="app-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>5.0 (5.0K)</span>
+                        </div>
+                        <button class="download-btn"><i class="fas fa-download"></i> 获取</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 应用卡片4 -->
+            <div class="app-card" data-categories="game,new" data-tags="free" data-name="Pixel Quest" data-description="复古像素风格冒险游戏">
+                <div class="app-image" style="background: linear-gradient(135deg, #06d6a0, #118ab2);">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="app-content">
+                    <div class="app-header">
+                        <h3 class="app-title">Pixel Quest</h3>
+                        <div class="app-category">游戏</div>
+                    </div>
+                    <p class="app-description">复古像素风格冒险游戏，探索神秘世界，解开古老谜题，收集珍贵宝藏。支持多人联机。</p>
+                    <div class="app-footer">
+                        <div class="app-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.6 (8.7K)</span>
+                        </div>
+                        <button class="download-btn"><i class="fas fa-download"></i> 获取</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 应用卡片5 -->
+            <div class="app-card" data-categories="productivity" data-tags="free,editor" data-name="CodeMaster" data-description="强大的代码编辑器">
+                <div class="app-image" style="background: linear-gradient(135deg, #7209b7, #3a0ca3);">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="app-content">
+                    <div class="app-header">
+                        <h3 class="app-title">CodeMaster</h3>
+                        <div class="app-category">开发工具</div>
+                    </div>
+                    <p class="app-description">强大的代码编辑器，支持多种编程语言，提供智能提示、调试功能和版本控制集成。</p>
+                    <div class="app-footer">
+                        <div class="app-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>5.0 (6.4K)</span>
+                        </div>
+                        <button class="download-btn"><i class="fas fa-download"></i> 获取</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 应用卡片6 -->
+            <div class="app-card" data-categories="design" data-tags="premium" data-name="DesignLab" data-description="UI设计工具">
+                <div class="app-image" style="background: linear-gradient(135deg, #ef476f, #ffd166);">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <div class="app-content">
+                    <div class="app-header">
+                        <h3 class="app-title">DesignLab</h3>
+                        <div class="app-category">设计</div>
+                    </div>
+                    <p class="app-description">专业的UI设计工具，提供丰富的模板和组件库，帮助设计师快速创建精美的用户界面。</p>
+                    <div class="app-footer">
+                        <div class="app-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <span>4.0 (2.9K)</span>
+                        </div>
+                        <button class="download-btn downloaded"><i class="fas fa-check"></i> 已安装</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 应用卡片7 -->
+            <div class="app-card" data-categories="education,editor" data-tags="free" data-name="LearnHub" data-description="在线学习平台">
+                <div class="app-image" style="background: linear-gradient(135deg, #3a86ff, #8338ec);">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="app-content">
+                    <div class="app-header">
+                        <h3 class="app-title">LearnHub</h3>
+                        <div class="app-category">教育</div>
+                    </div>
+                    <p class="app-description">综合性在线学习平台，提供编程、设计、商业等领域的课程，支持互动学习和进度跟踪。</p>
+                    <div class="app-footer">
+                        <div class="app-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.5 (3.8K)</span>
+                        </div>
+                        <button class="download-btn"><i class="fas fa-download"></i> 获取</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 应用卡片8 -->
+            <div class="app-card" data-categories="game" data-tags="free,new" data-name="SpaceRunner" data-description="太空冒险游戏">
+                <div class="app-image" style="background: linear-gradient(135deg, #ff006e, #fb5607);">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="app-content">
+                    <div class="app-header">
+                        <h3 class="app-title">SpaceRunner</h3>
+                        <div class="app-category">游戏</div>
+                    </div>
+                    <p class="app-description">太空探索冒险游戏，驾驶宇宙飞船穿越星系，完成各种任务并发现新星球。</p>
+                    <div class="app-footer">
+                        <div class="app-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.7 (6.2K)</span>
+                        </div>
+                        <button class="download-btn"><i class="fas fa-download"></i> 获取</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 下载管理面板 -->
+        <div class="downloads-panel" id="downloads-panel">
+            <div class="downloads-header">
+                <h3 class="section-title">下载管理</h3>
+            </div>
+            
+            <div class="download-list">
+                <div class="download-item">
+                    <div class="download-icon" style="background: linear-gradient(135deg, #4361ee, #4895ef);">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="download-info">
+                        <div class="download-name">PhotoMaster Pro</div>
+                        <div class="download-status">
+                            <i class="fas fa-cloud-download-alt"></i>
+                            <span>下载中 - 65%</span>
+                        </div>
+                        <div class="download-progress">
+                            <div class="progress-bar" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div class="download-actions">
+                        <button><i class="fas fa-pause"></i></button>
+                        <button><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                
+                <div class="download-item">
+                    <div class="download-icon" style="background: linear-gradient(135deg, #f8961e, #f3722c);">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="download-info">
+                        <div class="download-name">DocuSync</div>
+                        <div class="download-status">
+                            <i class="fas fa-check-circle"></i>
+                            <span>已完成</span>
+                        </div>
+                    </div>
+                    <div class="download-actions">
+                        <button><i class="fas fa-play-circle"></i></button>
+                        <button><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 应用数据
+        const apps = [
+            {
+                id: 1,
+                name: "PhotoMaster Pro",
+                category: "摄影",
+                tags: ["免费", "新应用", "编辑推荐"],
+                description: "专业的照片编辑工具，提供强大的滤镜和编辑功能，让您的照片更加出彩。支持RAW格式和批量处理。",
+                rating: 4.7,
+                reviews: "4.7K",
+                icon: "fas fa-camera",
+                color: "linear-gradient(135deg, #4361ee, #4895ef)"
+            },
+            {
+                id: 2,
+                name: "SoundWave",
+                category: "音乐",
+                tags: ["免费"],
+                description: "高品质音乐播放器，支持多种格式，提供个性化推荐和在线电台功能。无广告干扰。",
+                rating: 4.0,
+                reviews: "3.2K",
+                icon: "fas fa-headphones",
+                color: "linear-gradient(135deg, #f72585, #b5179e)"
+            },
+            {
+                id: 3,
+                name: "DocuSync",
+                category: "办公",
+                tags: ["高级版"],
+                description: "文档协作工具，支持实时编辑、评论和版本控制，提高团队协作效率。与云存储无缝集成。",
+                rating: 5.0,
+                reviews: "5.0K",
+                icon: "fas fa-file-alt",
+                color: "linear-gradient(135deg, #f8961e, #f3722c)"
+            },
+            {
+                id: 4,
+                name: "Pixel Quest",
+                category: "游戏",
+                tags: ["免费", "新应用"],
+                description: "复古像素风格冒险游戏，探索神秘世界，解开古老谜题，收集珍贵宝藏。支持多人联机。",
+                rating: 4.6,
+                reviews: "8.7K",
+                icon: "fas fa-gamepad",
+                color: "linear-gradient(135deg, #06d6a0, #118ab2)"
+            },
+            {
+                id: 5,
+                name: "CodeMaster",
+                category: "开发工具",
+                tags: ["免费", "编辑推荐"],
+                description: "强大的代码编辑器，支持多种编程语言，提供智能提示、调试功能和版本控制集成。",
+                rating: 5.0,
+                reviews: "6.4K",
+                icon: "fas fa-code",
+                color: "linear-gradient(135deg, #7209b7, #3a0ca3)"
+            },
+            {
+                id: 6,
+                name: "DesignLab",
+                category: "设计",
+                tags: ["高级版"],
+                description: "专业的UI设计工具，提供丰富的模板和组件库，帮助设计师快速创建精美的用户界面。",
+                rating: 4.0,
+                reviews: "2.9K",
+                icon: "fas fa-paint-brush",
+                color: "linear-gradient(135deg, #ef476f, #ffd166)"
+            },
+            {
+                id: 7,
+                name: "LearnHub",
+                category: "教育",
+                tags: ["免费"],
+                description: "综合性在线学习平台，提供编程、设计、商业等领域的课程，支持互动学习和进度跟踪。",
+                rating: 4.5,
+                reviews: "3.8K",
+                icon: "fas fa-graduation-cap",
+                color: "linear-gradient(135deg, #3a86ff, #8338ec)"
+            },
+            {
+                id: 8,
+                name: "SpaceRunner",
+                category: "游戏",
+                tags: ["免费", "新应用"],
+                description: "太空探索冒险游戏，驾驶宇宙飞船穿越星系，完成各种任务并发现新星球。",
+                rating: 4.7,
+                reviews: "6.2K",
+                icon: "fas fa-rocket",
+                color: "linear-gradient(135deg, #ff006e, #fb5607)"
+            }
+        ];
+
+        // DOM元素
+        const searchInput = document.getElementById('searchInput');
+        const appsContainer = document.getElementById('appsContainer');
+        const resultsCount = document.getElementById('resultsCount');
+        const filterTags = document.querySelectorAll('.filter-tag');
+        
+        // 当前筛选状态
+        let currentCategory = 'all';
+        let currentTag = '';
+        let currentSort = 'popular';
+        let searchTerm = '';
+        
+        // 初始化应用列表
+        function renderApps() {
+            appsContainer.innerHTML = '';
+            
+            // 过滤应用
+            let filteredApps = apps.filter(app => {
+                // 分类筛选
+                const categoryMatch = currentCategory === 'all' || 
+                                    app.category.toLowerCase().includes(currentCategory);
+                
+                // 标签筛选
+                const tagMatch = currentTag === '' || app.tags.includes(currentTag);
+                
+                // 搜索筛选
+                const searchMatch = searchTerm === '' || 
+                                   app.name.toLowerCase().includes(searchTerm) || 
+                                   app.description.toLowerCase().includes(searchTerm);
+                
+                return categoryMatch && tagMatch && searchMatch;
+            });
+            
+            // 排序应用
+            switch(currentSort) {
+                case 'newest':
+                    filteredApps.sort((a, b) => b.id - a.id);
+                    break;
+                case 'rating':
+                    filteredApps.sort((a, b) => b.rating - a.rating);
+                    break;
+                default: // 默认按popular（ID顺序）
+                    filteredApps.sort((a, b) => a.id - b.id);
+            }
+            
+            // 显示应用数量
+            resultsCount.textContent = `显示 ${filteredApps.length} 个应用`;
+            
+            // 渲染应用卡片
+            if (filteredApps.length === 0) {
+                appsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>没有找到匹配的应用</h3>
+                        <p>请尝试其他搜索关键词或更改筛选条件</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredApps.forEach(app => {
+                const appCard = document.createElement('div');
+                appCard.className = 'app-card';
+                appCard.innerHTML = `
+                    <div class="app-image" style="background: ${app.color}">
+                        <i class="${app.icon}"></i>
+                    </div>
+                    <div class="app-content">
+                        <div class="app-header">
+                            <h3 class="app-title">${app.name}</h3>
+                            <div class="app-category">${app.category}</div>
+                        </div>
+                        <p class="app-description">${app.description}</p>
+                        <div class="app-footer">
+                            <div class="app-rating">
+                                ${renderStars(app.rating)}
+                                <span>${app.rating} (${app.reviews})</span>
+                            </div>
+                            <button class="download-btn"><i class="fas fa-download"></i> 获取</button>
+                        </div>
+                    </div>
+                `;
+                appsContainer.appendChild(appCard);
+            });
+            
+            // 添加下载事件监听
+            document.querySelectorAll('.download-btn:not(.downloaded)').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const appCard = this.closest('.app-card');
+                    const appName = appCard.querySelector('.app-title').textContent;
+                    
+                    this.innerHTML = '<i class="fas fa-check"></i> 已添加';
+                    this.classList.add('downloaded');
+                    this.disabled = true;
+                    
+                    showNotification(`开始下载: ${appName}`);
+                    addToDownloads(appName, appCard);
+                });
+            });
+        }
+        
+        // 渲染评分星星
+        function renderStars(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            
+            for (let i = 1; i <= 5; i++) {
+                if (i <= fullStars) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i === fullStars + 1 && hasHalfStar) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            
+            return stars;
+        }
+        
+        // 添加到下载列表
+        function addToDownloads(appName, appCard) {
+            const downloadList = document.querySelector('.download-list');
+            const iconClass = appCard.querySelector('.app-image i').className;
+            const bgStyle = appCard.querySelector('.app-image').style.background;
+            
+            const downloadItem = document.createElement('div');
+            downloadItem.className = 'download-item';
+            downloadItem.innerHTML = `
+                <div class="download-icon" style="background: ${bgStyle}">
+                    <i class="${iconClass}"></i>
+                </div>
+                <div class="download-info">
+                    <div class="download-name">${appName}</div>
+                    <div class="download-status">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <span>准备下载...</span>
+                    </div>
+                    <div class="download-progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+                <div class="download-actions">
+                    <button><i class="fas fa-pause"></i></button>
+                    <button><i class="fas fa-times"></i></button>
+                </div>
+            `;
+            
+            downloadList.prepend(downloadItem);
+            startDownloadSimulation(downloadItem);
+            
+            // 添加下载控制事件
+            downloadItem.querySelectorAll('.download-actions button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const action = this.querySelector('i').className;
+                    
+                    if (action.includes('fa-pause')) {
+                        this.innerHTML = '<i class="fas fa-play"></i>';
+                        showNotification(`已暂停下载: ${appName}`);
+                    } else if (action.includes('fa-play')) {
+                        this.innerHTML = '<i class="fas fa-pause"></i>';
+                        showNotification(`继续下载: ${appName}`);
+                    } else if (action.includes('fa-times') || action.includes('fa-trash')) {
+                        downloadItem.remove();
+                        showNotification(`已取消下载: ${appName}`);
+                    }
+                });
+            });
+        }
+        
+        // 模拟下载进度
+        function startDownloadSimulation(downloadItem) {
+            const status = downloadItem.querySelector('.download-status span');
+            const progressBar = downloadItem.querySelector('.progress-bar');
+            let progress = 0;
+            
+            status.textContent = '下载中 - 0%';
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    status.innerHTML = '<i class="fas fa-check-circle"></i> 已完成';
+                    downloadItem.querySelector('.download-actions button:first-child').innerHTML = '<i class="fas fa-play-circle"></i>';
+                    showNotification(`${downloadItem.querySelector('.download-name').textContent} 下载完成`);
+                }
+                
+                progressBar.style.width = `${progress}%`;
+                status.textContent = `下载中 - ${Math.round(progress)}%`;
+            }, 300);
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // 筛选标签点击事件
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', function() {
+                const type = this.parentElement.parentElement.querySelector('.filter-title').textContent;
+                
+                if (type.includes('分类')) {
+                    currentCategory = this.getAttribute('data-category');
+                    document.querySelectorAll('[data-category]').forEach(t => t.classList.remove('active'));
+                } else if (type.includes('标签')) {
+                    currentTag = this.getAttribute('data-tag');
+                    document.querySelectorAll('[data-tag]').forEach(t => t.classList.remove('active'));
+                } else if (type.includes('排序')) {
+                    currentSort = this.getAttribute('data-sort');
+                    document.querySelectorAll('[data-sort]').forEach(t => t.classList.remove('active'));
+                }
+                
+                this.classList.add('active');
+                renderApps();
+            });
+        });
+        
+        // 搜索功能
+        searchInput.addEventListener('input', function() {
+            searchTerm = this.value.toLowerCase();
+            renderApps();
+        });
+        
+        // 初始化渲染
+        renderApps();
+    </script>
+</body>
+</html>
